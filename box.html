@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Box Breathing</title>
+  <style>
+    body {
+      background: #222;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .square {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      border: 4px solid #4CAF50;
+      margin: 20px 0;
+    }
+    .dot {
+      width: 20px;
+      height: 20px;
+      background: #4CAF50;
+      border-radius: 50%;
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      transition: all 4s linear;
+    }
+    .text {
+      font-size: 28px;
+      margin-top: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Box Breathing</h1>
+  <input type="number" id="minutesInput" placeholder="Minutes (e.g. 5)" min="1">
+  <button onclick="startBreathing()">Start</button>
+  <div class="square">
+    <div class="dot" id="dot"></div>
+  </div>
+  <div class="text" id="actionText">Enter duration & start</div>
+
+  <script>
+    const dot = document.getElementById('dot');
+    const actionText = document.getElementById('actionText');
+    let phaseIndex = 0;
+    let interval;
+    let cycles = 0;
+    const phases = [
+      { action: 'Inhale', top: '-10px', left: '190px' }, // move right
+      { action: 'Hold', top: '190px', left: '190px' },   // move down
+      { action: 'Exhale', top: '190px', left: '-10px' }, // move left
+      { action: 'Hold', top: '-10px', left: '-10px' }    // move up
+    ];
+
+    function startBreathing() {
+      const minutes = parseInt(document.getElementById('minutesInput').value);
+      if (!minutes || minutes <= 0) {
+        alert('Please enter a valid duration in minutes.');
+        return;
+      }
+      const maxCycles = (minutes * 60) / 16; // 16 seconds per full box
+      phaseIndex = 0;
+      cycles = 0;
+      actionText.textContent = 'Starting...';
+      moveDot(); // start immediately
+      interval = setInterval(() => {
+        moveDot();
+        if (phaseIndex === 0) cycles++;
+        if (cycles >= maxCycles) {
+          clearInterval(interval);
+          actionText.textContent = 'Done!';
+        }
+      }, 4000);
+    }
+
+    function moveDot() {
+      const phase = phases[phaseIndex];
+      dot.style.top = phase.top;
+      dot.style.left = phase.left;
+      actionText.textContent = phase.action;
+      phaseIndex = (phaseIndex + 1) % phases.length;
+    }
+  </script>
+</body>
+</html>
